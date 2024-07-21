@@ -1,0 +1,71 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Drawing</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <h1>Draw on the Canvas</h1>
+    <canvas id="canvas" width="500" height="500"></canvas>
+    <br>
+    <button id="saveBtn">Save as JPG</button>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let drawing = false;
+
+        // Initialize canvas with black background
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        canvas.addEventListener('mousedown', () => { drawing = true; });
+        canvas.addEventListener('mouseup', () => { drawing = false; ctx.beginPath(); });
+        canvas.addEventListener('mousemove', draw);
+
+        function draw(event) {
+            if (!drawing) return;
+            ctx.lineWidth = 5;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = 'white';
+
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        document.getElementById('saveBtn').addEventListener('click', async () => {
+            // e.preventDefault();
+            const dataURL = canvas.toDataURL('image/jpeg');
+            const blob = await (await fetch(dataURL)).blob();
+            const file = new File([blob], "drawing.jpg", { type: "image/jpeg" });
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const response = await fetch('http://127.0.0.1:8000/predict/', {
+                method: 'POST',
+                body: formData,
+
+            });
+
+            const result = await response.json();
+            // alert(result.message);
+            console.log(result);
+        });
+    </script>
+</body>
+</html>
