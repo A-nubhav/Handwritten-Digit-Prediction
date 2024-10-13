@@ -1,1 +1,2 @@
 # Handwritten-Digit-Prediction
+Implemented a machine learning model using Convolutional Neural Network (CNN) to classify handwritten digits from the MNIST dataset. The model Achieved an accuracy of 85%  through model optimization and validation and was deployed using FastAPI for real-time predictions. The API takes an input image of a digit and returns the predicted label, enabling easy integration with applications requiring digit recognition.
